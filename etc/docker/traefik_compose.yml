@@ -1,0 +1,83 @@
+version: "3"
+services:
+  traefik:
+    image: traefik:v2.0
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - traefik_network
+    labels:
+      #
+      - "traefik.enable=true"
+      #
+      - "traefik.http.services.api@internal.loadbalancer.server.port=8080"
+      #
+      - "traefik.http.routers.traefik_insecure.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.traefik_insecure.service=api@internal"
+      - "traefik.http.routers.traefik_insecure.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik_insecure.entrypoints=http"
+      - "traefik.http.routers.traefik_insecure.middlewares=base_redirect_http_to_https@file"
+      #
+      - "traefik.http.routers.traefik_secure.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.traefik_secure.service=api@internal"
+      - "traefik.http.routers.traefik_secure.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik_secure.tls=true"
+      - "traefik.http.routers.traefik_secure.entrypoints=https"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "../traefik:/etc/traefik"
+
+  node_app_a:
+    image: docker_nodeapp_builder:latest
+    networks:
+      - traefik_network
+    labels:
+      #
+      - "traefik.enable=true"
+      #
+      - "traefik.http.middlewares.node_a_prefix.addprefix.prefix=/service/node_a"
+      # 
+      - "traefik.http.services.node_app_a.loadbalancer.server.port=3000"
+      #
+      - "traefik.http.routers.node_app_a_insecure.rule=PathPrefix(`/app_a`)"
+      - "traefik.http.routers.node_app_a_insecure.service=node_app_a"
+      - "traefik.http.routers.node_app_a_insecure.rule=Host(`node_a.localhost`)"
+      - "traefik.http.routers.node_app_a_insecure.entrypoints=http"
+      - "traefik.http.routers.node_app_a_insecure.middlewares=base_redirect_http_to_https@file"
+      # 
+      - "traefik.http.routers.node_app_a_secure.rule=PathPrefix(`/app_a`)"
+      - "traefik.http.routers.node_app_a_secure.service=node_app_a"
+      - "traefik.http.routers.node_app_a_secure.rule=Host(`node_a.localhost`)"
+      - "traefik.http.routers.node_app_a_secure.tls=true"
+      - "traefik.http.routers.node_app_a_secure.entrypoints=https"
+      - "traefik.http.routers.node_app_a_secure.middlewares=node_a_prefix"
+  
+  node_app_b:
+    image: docker_nodeapp_builder:latest
+    networks:
+      - traefik_network
+    labels:
+      #
+      - "traefik.enable=true"
+      #
+      - "traefik.http.middlewares.node_b_prefix.addprefix.prefix=/service/node_b"
+      # 
+      - "traefik.http.services.node_app_b.loadbalancer.server.port=3000"
+      #
+      - "traefik.http.routers.node_app_b_insecure.rule=PathPrefix(`/app_b`)"
+      - "traefik.http.routers.node_app_b_insecure.service=node_app_b"
+      - "traefik.http.routers.node_app_b_insecure.rule=Host(`node_b.localhost`)"
+      - "traefik.http.routers.node_app_b_insecure.entrypoints=http"
+      - "traefik.http.routers.node_app_b_insecure.middlewares=base_redirect_http_to_https@file"
+      # 
+      - "traefik.http.routers.node_app_b_secure.rule=PathPrefix(`/app_b`)"
+      - "traefik.http.routers.node_app_b_secure.service=node_app_b"
+      - "traefik.http.routers.node_app_b_secure.rule=Host(`node_b.localhost`)"
+      - "traefik.http.routers.node_app_b_secure.tls=true"
+      - "traefik.http.routers.node_app_b_secure.entrypoints=https"
+      - "traefik.http.routers.node_app_b_secure.middlewares=node_b_prefix"
+
+networks:
+  traefik_network:
+    driver: bridge
