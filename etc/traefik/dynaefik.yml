@@ -1,6 +1,10 @@
+# Dynamic Traefik configuration
+
+# Middlewares
 http:
   middlewares:
     base_redirect_http_to_https:
       redirectRegex:
         regex: "^http://(.*)"
         replacement: "https://$1"
+        permanent: true

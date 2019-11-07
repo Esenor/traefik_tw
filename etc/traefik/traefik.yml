@@ -1,3 +1,5 @@
+# Static Traefik configuration
+
 defaultEntryPoints:
   - http
   - https
@@ -13,6 +15,10 @@ entryPoints:
     address: ':80'
   https:
     address: ':443'
+
+serversTransport:
+  # Only with dev env to skip tls verification
+  insecureSkipVerify: true
 
 providers:
   docker:

@@ -1,0 +1,53 @@
+version: "3"
+services:
+
+  node_app_a:
+    image: docker_nodeapp_builder:latest
+    labels:
+      # Traefik activation
+      - "traefik.enable=true"
+      # Traefik middleware declaration
+      - "traefik.http.middlewares.node_a_prefix.addprefix.prefix=/service/node_a"
+      # Traefik service declaration
+      - "traefik.http.services.node_app_a.loadbalancer.server.port=3000"
+      # Traefik insecure router declaration
+      - "traefik.http.routers.node_app_a_insecure.rule=PathPrefix(`/app_a`)"
+      - "traefik.http.routers.node_app_a_insecure.service=node_app_a"
+      - "traefik.http.routers.node_app_a_insecure.rule=Host(`node_a.localhost`)"
+      - "traefik.http.routers.node_app_a_insecure.entrypoints=http"
+      - "traefik.http.routers.node_app_a_insecure.middlewares=base_redirect_http_to_https@file"
+      # Traefik secure router declaration
+      - "traefik.http.routers.node_app_a_secure.rule=PathPrefix(`/app_a`)"
+      - "traefik.http.routers.node_app_a_secure.service=node_app_a"
+      - "traefik.http.routers.node_app_a_secure.rule=Host(`node_a.localhost`)"
+      - "traefik.http.routers.node_app_a_secure.tls=true"
+      - "traefik.http.routers.node_app_a_secure.entrypoints=https"
+      - "traefik.http.routers.node_app_a_secure.middlewares=node_a_prefix"
+  
+  node_app_b:
+    image: docker_nodeapp_builder:latest
+    labels:
+      # Traefik activation
+      - "traefik.enable=true"
+      # Traefik middleware declaration
+      - "traefik.http.middlewares.node_b_prefix.addprefix.prefix=/service/node_b"
+      # Traefik service declaration
+      - "traefik.http.services.node_app_b.loadbalancer.server.port=3000"
+      # Traefik insecure router declaration
+      - "traefik.http.routers.node_app_b_insecure.rule=PathPrefix(`/app_b`)"
+      - "traefik.http.routers.node_app_b_insecure.service=node_app_b"
+      - "traefik.http.routers.node_app_b_insecure.rule=Host(`node_b.localhost`)"
+      - "traefik.http.routers.node_app_b_insecure.entrypoints=http"
+      - "traefik.http.routers.node_app_b_insecure.middlewares=base_redirect_http_to_https@file"
+      # Traefik secure router declaration
+      - "traefik.http.routers.node_app_b_secure.rule=PathPrefix(`/app_b`)"
+      - "traefik.http.routers.node_app_b_secure.service=node_app_b"
+      - "traefik.http.routers.node_app_b_secure.rule=Host(`node_b.localhost`)"
+      - "traefik.http.routers.node_app_b_secure.tls=true"
+      - "traefik.http.routers.node_app_b_secure.entrypoints=https"
+      - "traefik.http.routers.node_app_b_secure.middlewares=node_b_prefix"
+
+networks:
+  default:
+    external:
+        name: ols_dev
