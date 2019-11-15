@@ -1,0 +1,6 @@
+version: "3"
+services:
+  traefik_builder:
+    build:
+      context: ../..
+      dockerfile: etc/docker/Dockerfile.traefik

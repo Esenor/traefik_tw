@@ -3,4 +3,4 @@ services:
   nodeapp_builder:
     build:
       context: ../..
-      dockerfile: etc/docker/Dockerfile
+      dockerfile: etc/docker/Dockerfile.node

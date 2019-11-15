@@ -1,0 +1,4 @@
+FROM traefik:2.0.4
+COPY /etc/traefik/traefik.yml /etc/traefik/traefik.yml
+COPY /etc/traefik/dynaefik.yml /etc/traefik/dynaefik.yml
+CMD ["traefik"]
