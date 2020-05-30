@@ -6,6 +6,7 @@ services:
     labels:
       # Traefik activation
       - "traefik.enable=true"
+      
       # Traefik middleware declaration
       - "traefik.http.middlewares.node_a_prefix.addprefix.prefix=/service/node_a"
       # Traefik service declaration
